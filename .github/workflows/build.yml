@@ -36,11 +36,14 @@ jobs:
           cache: true
           cache-dependency-path: geoip-src/go.sum
 
-      - name: Build tools
+      - name: Build geoip tool
         run: |
           cd geoip-src
           go build -v -o ../geoip-bin
           cd ..
+
+      - name: Build geosite tool
+        run: |
           cd geosite-src
           go build -v -o ../geosite-bin
           cd ..
