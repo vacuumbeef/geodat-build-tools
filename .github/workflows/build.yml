@@ -1,0 +1,56 @@
+name: Build geosite
+on:
+  workflow_dispatch:
+  schedule:
+      - cron: '0 0 1 * *'
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "README.md"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone geoip builder
+        uses: actions/checkout@v4
+        with:
+          repository: Loyalsoldier/geoip
+          path: geoip-src
+
+      - name: Clone geosite builder
+        uses: actions/checkout@v4
+        with:
+          repository: v2fly/domain-list-community
+          path: geosite-src
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: geoip-src/go.mod
+          cache: true
+          cache-dependency-path: geoip-src/go.sum
+
+      - name: Build tools
+        run: |
+          cd geoip-src
+          go build -v -o ../geoip-bin
+          cd ..
+          cd geosite-src
+          go build -v -o ../geosite-bin
+          cd ..
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: tools
+          name: "Latest build tools"
+          prerelease: false
+          files: |
+            geoip-bin
+            geosite-bin
