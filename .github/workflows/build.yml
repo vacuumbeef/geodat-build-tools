@@ -1,4 +1,4 @@
-name: Build geosite
+name: Build geodat tools
 on:
   workflow_dispatch:
   schedule:
